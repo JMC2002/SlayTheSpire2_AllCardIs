@@ -27,7 +27,7 @@ Steam版本直接在创意工坊订阅即可（暂未开放）
 ## 🧠 1. 简介
 主要拿来出一期开局阳伞+所有问号全变商店的视频用的
 
-[演示视频（B站）](https://www.bilibili.com/video/BV14ScUzTEo2)
+[演示视频（B站）](https://www.bilibili.com/video/BV1BnwXziEsc)
 
 [Github仓库](https://github.com/JMC2002/SlayTheSpire2_AllCardIs)
 ## ⚙️ 2. 功能
