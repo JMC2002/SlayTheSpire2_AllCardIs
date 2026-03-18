@@ -1,7 +1,11 @@
 ﻿{
-    "pck_name": "AllCardIs",
-    "name": "将所有卡牌变为/AllCardIs",
-    "author": "JMC",
-    "version": "1.0.0",
-    "description": "将所有卡牌（初始以及后续获得的卡，不包括局内检索）变为白噪声，后续可能考虑做成通用形式；有问题反馈B站JMC丶或者Github，二次分发请注明来源"
+  "id": "AllCardIs",
+  "name": "将所有卡牌变为/AllCardIs",
+  "author": "JMC",
+  "version": "1.1.0",
+  "description": "将所有卡牌（初始以及后续获得的卡，不包括局内检索）变为白噪声，后续可能考虑做成通用形式；有问题反馈B站JMC丶或者Github，二次分发请注明来源",
+  "has_pck": true,
+  "has_dll": true,
+  "dependencies": [],
+  "affects_gameplay": false
 }
