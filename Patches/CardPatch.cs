@@ -3,61 +3,67 @@ using HarmonyLib;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.Models.Characters;
 using MegaCrit.Sts2.Core.Runs;
-using System;
-using System.Linq;
 
-namespace AllCardIs
+namespace AllCardIs.Patches
 {
-    [HarmonyPatch(typeof(RunState), "CreateCard", new Type[] { typeof(CardModel), typeof(Player) })]
+    public static class ModConfig
+    {
+        // 这里存储 ID 的映射：原ID -> 目标ID
+        // 如果想把所有牌改成“大奖”，可以保留这个字典结构，方便未来扩展
+        public static readonly string TargetCardName = "大奖";
+        public static readonly string TargetCardId; // 统一配置目标
+
+        // 如果未来你想针对不同情况替换不同卡牌，可以在这里扩充字典
+        public static readonly Dictionary<string, string> Replacements = new()
+        {
+            { "白噪音", "CARD.WHITE_NOISE" },
+            { "大奖", "CARD.JACKPOT" },
+            { "打击", "CARD.STRIKE_DEFECT" }
+        };
+
+        // 静态构造函数：在任何成员被访问前自动执行
+        static ModConfig()
+        {
+            if (Replacements.TryGetValue(TargetCardName, out string? value))
+            {
+                TargetCardId = value;
+            }
+            else
+            {
+                // 默认回退值，防止找不到Key导致崩溃
+                TargetCardId = "CARD.WHITE_NOISE";
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(RunState), "CreateCard", [typeof(CardModel), typeof(Player)])]
     public class RunState_CreateCard_Patch
     {
-        private static CardModel _whiteNoiseTemplate = null;
-        private static bool _initialized = false;
+        private static CardModel _targetTemplate;
 
         [HarmonyPrefix]
         public static void Prefix(ref CardModel __0)
         {
             if (__0 == null) return;
-
             string originalId = __0.Id.ToString();
 
-            if (!_initialized)
+            // 1. 初始化模板 (懒加载)
+            if (_targetTemplate == null)
             {
-                _initialized = true;
-                ModLogger.Info("========================================");
-                ModLogger.Info("开始在数据库中寻找白噪音模板...");
-
-                // 精确提取 CARD.WHITE_NOISE
-                _whiteNoiseTemplate = ModelDb.AllCards.FirstOrDefault(c => c.Id.ToString() == "CARD.WHITE_NOISE");
-
-                if (_whiteNoiseTemplate != null)
-                {
-                    ModLogger.Info($"成功找到白噪音模板！");
-                }
-                else
-                {
-                    ModLogger.Error("致命错误：没有找到 CARD.WHITE_NOISE！");
-                }
-                ModLogger.Info("========================================");
+                _targetTemplate = ModelDb.AllCards.FirstOrDefault(static c => c.Id.ToString() == ModConfig.TargetCardId);
+                if (_targetTemplate == null)
+                    ModLogger.Error($"致命错误：未找到目标卡牌 {ModConfig.TargetCardName}");
             }
 
-            if (_whiteNoiseTemplate != null)
+            // 2. 拦截替换
+            if (_targetTemplate != null && originalId != ModConfig.TargetCardId)
             {
-                // 过滤掉硬编码的系统卡牌，防止底层泛型强转时发生 InvalidCastException 崩溃
-                if (originalId == "CARD.ASCENDERS_BANE")
-                {
-                    ModLogger.Warn($"跳过替换: 游戏尝试生成【{originalId}】，该卡牌底层使用了泛型强转，已放行。");
-                    return;
-                }
+                // 放行名单
+                if (originalId == "CARD.ASCENDERS_BANE") return;
 
-                // 替换非白噪音的其他所有卡牌
-                if (originalId != "CARD.WHITE_NOISE")
-                {
-                    ModLogger.Info($"拦截发牌: 游戏尝试生成【{originalId}】，已被强行替换为【CARD.WHITE_NOISE】！");
-                    __0 = _whiteNoiseTemplate; // 偷梁换柱！
-                }
+                ModLogger.Info($"拦截发牌: {originalId} -> {ModConfig.TargetCardId}");
+                __0 = _targetTemplate;
             }
         }
     }
@@ -69,32 +75,21 @@ namespace AllCardIs
         public static void Postfix(RunState __result)
         {
             if (__result == null) return;
-
-            var whiteNoise = ModelDb.AllCards.FirstOrDefault(c => c.Id.ToString() == "CARD.WHITE_NOISE");
-            if (whiteNoise == null) return;
+            var target = ModelDb.AllCards.FirstOrDefault(c => c.Id.ToString() == ModConfig.TargetCardId);
+            if (target == null) return;
 
             foreach (var player in __result.Players)
             {
                 CardPile deckPile = player.Deck;
+                // 找出所有不是大奖的牌
+                var toReplace = deckPile.Cards.Where(c => c.Id.ToString() != ModConfig.TargetCardId).ToList();
 
-                var cardsToRemove = deckPile.Cards
-                    .Where(c => c.Id.ToString() != "CARD.WHITE_NOISE")
-                    .ToList();
-
-                if (!cardsToRemove.Any()) continue;
-
-                foreach (var card in cardsToRemove)
+                foreach (var card in toReplace)
                 {
                     deckPile.RemoveInternal(card);
+                    deckPile.AddInternal(__result.CreateCard(target, player));
                 }
-
-                for (int i = 0; i < cardsToRemove.Count; i++)
-                {
-                    var newCard = __result.CreateCard(whiteNoise, player);
-                    deckPile.AddInternal(newCard);
-                }
-
-                ModLogger.Info($"牌库已清洗，已将 {cardsToRemove.Count} 张非白噪音牌替换。");
+                if (toReplace.Any()) ModLogger.Info($"牌库清洗: 替换了 {toReplace.Count} 张牌为 {ModConfig.TargetCardName}");
             }
         }
     }
