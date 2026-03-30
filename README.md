@@ -4,7 +4,7 @@
 
 [📦 Releases](https://github.com/JMC2002/SlayTheSpire2_AllCardIs/releases)
 
-# 所有问号房间全变为商店
+# 所有卡牌全变为...
 ##  0. 安装
 Steam版本直接在创意工坊订阅即可（暂未开放）
 
