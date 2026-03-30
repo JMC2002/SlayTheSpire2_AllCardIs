@@ -9,20 +9,17 @@ namespace AllCardIs.Patches
 {
     public static class ModConfig
     {
-        // 这里存储 ID 的映射：原ID -> 目标ID
-        // 如果想把所有牌改成“大奖”，可以保留这个字典结构，方便未来扩展
-        public static readonly string TargetCardName = "大奖";
+        public static readonly string TargetCardName = "蛇咬";
         public static readonly string TargetCardId; // 统一配置目标
 
-        // 如果未来你想针对不同情况替换不同卡牌，可以在这里扩充字典
         public static readonly Dictionary<string, string> Replacements = new()
         {
             { "白噪音", "CARD.WHITE_NOISE" },
             { "大奖", "CARD.JACKPOT" },
-            { "打击", "CARD.STRIKE_DEFECT" }
+            { "打击", "CARD.STRIKE_DEFECT" },
+            { "蛇咬", "CARD.SNAKEBITE" }
         };
 
-        // 静态构造函数：在任何成员被访问前自动执行
         static ModConfig()
         {
             if (Replacements.TryGetValue(TargetCardName, out string? value))
@@ -40,30 +37,18 @@ namespace AllCardIs.Patches
     [HarmonyPatch(typeof(RunState), "CreateCard", [typeof(CardModel), typeof(Player)])]
     public class RunState_CreateCard_Patch
     {
-        private static CardModel _targetTemplate;
-
         [HarmonyPrefix]
         public static void Prefix(ref CardModel __0)
         {
-            if (__0 == null) return;
-            string originalId = __0.Id.ToString();
+            if (__0.Id.ToString() == "CARD.ASCENDERS_BANE") return;
 
-            // 1. 初始化模板 (懒加载)
-            if (_targetTemplate == null)
+            if (CardReplacer.ShouldReplace(__0))
             {
-                _targetTemplate = ModelDb.AllCards.FirstOrDefault(static c => c.Id.ToString() == ModConfig.TargetCardId);
-                if (_targetTemplate == null)
-                    ModLogger.Error($"致命错误：未找到目标卡牌 {ModConfig.TargetCardName}");
-            }
-
-            // 2. 拦截替换
-            if (_targetTemplate != null && originalId != ModConfig.TargetCardId)
-            {
-                // 放行名单
-                if (originalId == "CARD.ASCENDERS_BANE") return;
-
-                ModLogger.Info($"拦截发牌: {originalId} -> {ModConfig.TargetCardId}");
-                __0 = _targetTemplate;
+                var target = CardReplacer.GetTarget();
+                if (target != null)
+                {
+                    __0 = target;
+                }
             }
         }
     }
@@ -75,21 +60,20 @@ namespace AllCardIs.Patches
         public static void Postfix(RunState __result)
         {
             if (__result == null) return;
-            var target = ModelDb.AllCards.FirstOrDefault(c => c.Id.ToString() == ModConfig.TargetCardId);
+            var target = CardReplacer.GetTarget();
             if (target == null) return;
 
             foreach (var player in __result.Players)
             {
                 CardPile deckPile = player.Deck;
-                // 找出所有不是大奖的牌
-                var toReplace = deckPile.Cards.Where(c => c.Id.ToString() != ModConfig.TargetCardId).ToList();
+                var toReplace = deckPile.Cards.Where(CardReplacer.ShouldReplace).ToList();
 
                 foreach (var card in toReplace)
                 {
                     deckPile.RemoveInternal(card);
                     deckPile.AddInternal(__result.CreateCard(target, player));
                 }
-                if (toReplace.Any()) ModLogger.Info($"牌库清洗: 替换了 {toReplace.Count} 张牌为 {ModConfig.TargetCardName}");
+                if (toReplace.Count != 0) ModLogger.Info($"[Postfix] 牌库清洗: 替换了 {toReplace.Count} 张卡牌为 {ModConfig.TargetCardName}");
             }
         }
     }
