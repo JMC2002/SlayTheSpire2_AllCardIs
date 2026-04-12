@@ -9,15 +9,28 @@ namespace AllCardIs.Patches
 {
     public static class ModConfig
     {
-        public static readonly string TargetCardName = "蛇咬";
+        public static readonly string TargetCardName = "爪击";
         public static readonly string TargetCardId; // 统一配置目标
 
         public static readonly Dictionary<string, string> Replacements = new()
         {
             { "白噪音", "CARD.WHITE_NOISE" },
             { "大奖", "CARD.JACKPOT" },
+            { "狱火", "CARD.INFERNO" },
             { "打击", "CARD.STRIKE_DEFECT" },
-            { "蛇咬", "CARD.SNAKEBITE" }
+            { "铸墙", "CARD.BULWARK" },
+            { "冲刺", "CARD.DASH" },
+            { "吊杀", "CARD.HANG" },
+            { "爪击", "CARD.CLAW" },
+            { "撕咬", "CARD.MAUL" },
+            { "发现", "CARD.DISCOVERY" },
+            { "拳斗", "CARD.FISTICUFFS" },
+            { "暗影之盾", "CARD.SHADOW_SHIELD" },
+            { "闪亮登场", "CARD.DRAMATIC_ENTRANCE" },
+            { "华丽收场", "CARD.GRAND_FINALE" },
+            { "蛇咬", "CARD.SNAKEBITE" },
+            { "新生之喜", "CARD.BUNDLE_OF_JOY" },
+            { "死亡收割", "CARD.REAPER" },
         };
 
         static ModConfig()

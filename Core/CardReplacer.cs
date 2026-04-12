@@ -1,9 +1,8 @@
 ﻿using AllCardIs.Patches;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
-using System.Linq;
 
-namespace AllCardIs
+namespace AllCardIs.Core
 {
     public static class CardReplacer
     {
@@ -11,6 +10,7 @@ namespace AllCardIs
 
         public static bool ShouldReplace(CardModel card)
         {
+            return card.Id.ToString() != ModConfig.TargetCardId;
             bool isAttack = card.Type == CardType.Attack;
             bool isCurse = card.Type == CardType.Curse;
 
@@ -19,8 +19,7 @@ namespace AllCardIs
 
         public static CardModel? GetTarget()
         {
-            if (_targetTemplate == null)
-                _targetTemplate = ModelDb.AllCards.FirstOrDefault(c => c.Id.ToString() == ModConfig.TargetCardId);
+            _targetTemplate ??= ModelDb.AllCards.FirstOrDefault(c => c.Id.ToString() == ModConfig.TargetCardId);
             return _targetTemplate;
         }
     }
