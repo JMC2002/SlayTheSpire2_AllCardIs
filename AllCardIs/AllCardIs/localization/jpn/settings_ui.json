@@ -1,0 +1,7 @@
+{
+  "EXTENSION.JMCMODLIB.CONFIG.AllCardIs.GROUP.基础设置": "基本設定",
+  "EXTENSION.JMCMODLIB.CONFIG.AllCardIs.enabled.NAME": "カード置き換えを有効化",
+  "EXTENSION.JMCMODLIB.CONFIG.AllCardIs.enabled.DESCRIPTION": "オフにしてもゲームの再起動は不要です。Harmony パッチは残りますが、この値を読んで全カードをそのまま通します。",
+  "EXTENSION.JMCMODLIB.CONFIG.AllCardIs.target_card.NAME": "対象カードID",
+  "EXTENSION.JMCMODLIB.CONFIG.AllCardIs.target_card.DESCRIPTION": "WHITE_NOISE または CARD.WHITE_NOISE を入力できます。白噪音、死亡收割 などの内蔵中国語別名も使えます。変更は即時反映されます。"
+}

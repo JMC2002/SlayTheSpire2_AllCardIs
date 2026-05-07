@@ -1,0 +1,7 @@
+{
+  "EXTENSION.JMCMODLIB.CONFIG.AllCardIs.GROUP.基础设置": "Configuracoes basicas",
+  "EXTENSION.JMCMODLIB.CONFIG.AllCardIs.enabled.NAME": "Ativar substituicao de cartas",
+  "EXTENSION.JMCMODLIB.CONFIG.AllCardIs.enabled.DESCRIPTION": "Ao desativar, nao e preciso reiniciar o jogo; o patch Harmony continua instalado, mas lera este valor e deixara todas as cartas passarem.",
+  "EXTENSION.JMCMODLIB.CONFIG.AllCardIs.target_card.NAME": "ID da carta alvo",
+  "EXTENSION.JMCMODLIB.CONFIG.AllCardIs.target_card.DESCRIPTION": "Voce pode inserir WHITE_NOISE ou CARD.WHITE_NOISE; aliases chineses integrados, como 白噪音 ou 死亡收割, tambem sao aceitos. As alteracoes tem efeito imediato."
+}

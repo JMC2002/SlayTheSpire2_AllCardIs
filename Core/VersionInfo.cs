@@ -1,9 +1,9 @@
-﻿namespace AllCardIs.Core;
+namespace AllCardIs.Core;
 
 public static class VersionInfo
 {
     public const string Name = "AllCardIs";
-    public const string Version = "1.2.2";
+    public const string Version = "1.3.2";
 
     public static string Tag => $"[{Name} v{Version}]";
 }

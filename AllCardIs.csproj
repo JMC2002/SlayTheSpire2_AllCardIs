@@ -1,11 +1,11 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
-    <PlatformTarget>x64</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
 
     <!-- Mod 基础信息 -->
     <ModName>$(MSBuildProjectName)</ModName>
@@ -23,10 +23,14 @@
     <!-- 定义发布文件夹路径 -->
     <PublishDir>$(ModLocalDir)\modPublish</PublishDir>
 
+    <!-- 游戏本地MOD目录 -->
+    <ModDir>$(Sts2Path)\mods</ModDir>
     <!-- 游戏最终加载的 mods 目录 -->
-    <ModGameDir>$(Sts2Path)\mods\$(ModName)</ModGameDir>
-
+    <ModGameDir>$(ModDir)\$(ModName)</ModGameDir>
+
+    <LaunchGamePrompt Condition="'$(LaunchGamePrompt)' == ''">true</LaunchGamePrompt>
   </PropertyGroup>
+  <Import Project="$(ModDir)\JmcModLib\JmcModLib.Sts2.props" />
 
   <ItemGroup>
     <Content Include="$(PublishDir)\$(ModName).json" />
@@ -59,7 +63,7 @@ config_version=5
 config/name="$(ModName)"
       </ProjectGodotText>
     </PropertyGroup>
-    <WriteLinesToFile File="$(ModLocalDir)\project.godot" Lines="$(ProjectGodotText)" Overwrite="false" Encoding="ASCII" Condition="!Exists('$(ModLocalDir)\project.godot')" />
+<WriteLinesToFile File="$(ModLocalDir)\project.godot" Lines="$(ProjectGodotText)" Overwrite="false" Encoding="ASCII" Condition="!Exists('$(ModLocalDir)\project.godot')" />
 
     <!-- 2. 生成 export_presets.cfg -->
     <PropertyGroup Condition="!Exists('$(ModLocalDir)\export_presets.cfg')">
@@ -90,7 +94,7 @@ texture_format/etc=false
 texture_format/etc2=false
       </ExportPresetsText>
     </PropertyGroup>
-    <WriteLinesToFile File="$(ModLocalDir)\export_presets.cfg" Lines="$(ExportPresetsText)" Overwrite="false" Encoding="ASCII" Condition="!Exists('$(ModLocalDir)\export_presets.cfg')" />
+<WriteLinesToFile File="$(ModLocalDir)\export_presets.cfg" Lines="$(ExportPresetsText)" Overwrite="false" Encoding="ASCII" Condition="!Exists('$(ModLocalDir)\export_presets.cfg')" />
 
     <!-- 3. 生成 mod_manifest.json -->
     <PropertyGroup Condition="!Exists('$(PublishDir)\$(ModName).json')">
@@ -103,12 +107,12 @@ texture_format/etc2=false
     "description": "$(ModName) Description",
     "has_pck": true,
     "has_dll": true,
-    "dependencies": [],
+    "dependencies": ["JmcModLib"],
     "affects_gameplay": false
 }
       </ManifestText>
     </PropertyGroup>
-    <WriteLinesToFile File="$(PublishDir)\$(ModName).json" Lines="$(ManifestText)" Overwrite="false" Encoding="utf-8" Condition="!Exists('$(PublishDir)\$(ModName).json')" />
+<WriteLinesToFile File="$(PublishDir)\$(ModName).json" Lines="$(ManifestText)" Overwrite="false" Encoding="utf-8" Condition="!Exists('$(PublishDir)\$(ModName).json')" />
   </Target>
 
   <!-- 2. 构建与部署 -->
@@ -142,7 +146,7 @@ texture_format/etc2=false
   </Target>
 
   <!-- 弹窗询问启动游戏 -->
-  <Target Name="AskToLaunchGame" AfterTargets="BuildAndDeploy">
+  <Target Name="AskToLaunchGame" AfterTargets="BuildAndDeploy" Condition="'$(LaunchGamePrompt)' != 'false'">
     <!-- 确保游戏环境就绪：生成 steam_appid.txt (只在文件不存在时创建)，防止游戏拦截 -->
     <WriteLinesToFile File="$(Sts2Path)\steam_appid.txt" Lines="2868840" Overwrite="false" Encoding="ASCII" Condition="!Exists('$(Sts2Path)\steam_appid.txt')" />
 
@@ -150,8 +154,8 @@ texture_format/etc2=false
       <GameExe>$(Sts2Path)\SlayTheSpire2.exe</GameExe>
       <LaunchArgs></LaunchArgs>
     </PropertyGroup>
-
-    <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -Command ^&#xD;&#xA;        Add-Type -AssemblyName PresentationFramework; ^&#xD;&#xA;        $res = [System.Windows.MessageBox]::Show('Mod已同步！是否立刻启动《杀戮尖塔2》并打开调试终端？','启动游戏','YesNo','Question'); ^&#xD;&#xA;        if ($res -eq 'Yes') { Start-Process '&quot;$(GameExe)&quot;' }" IgnoreExitCode="true" />
+<Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -Command ^&#xD;&#xA;        Add-Type -AssemblyName PresentationFramework; ^&#xD;&#xA;        $res = [System.Windows.MessageBox]::Show('Mod已同步！是否立刻启动《杀戮尖塔2》并打开调试终端？','启动游戏','YesNo','Question'); ^&#xD;&#xA;        if ($res -eq 'Yes') { Start-Process '&quot;$(GameExe)&quot;' }" IgnoreExitCode="true" />
   </Target>
 
 </Project>
+
