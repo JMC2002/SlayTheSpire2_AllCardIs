@@ -1,4 +1,3 @@
-﻿using System.Linq;
 using AllCardIs.Core;
 using HarmonyLib;
 using JmcModLib.Utils;

@@ -1,13 +1,10 @@
-﻿using System;
-using System.Diagnostics;
-using System.Linq;
-using System.Runtime.CompilerServices;
 using JmcModLib.Utils;
 using MegaCrit.Sts2.Core.Commands;
-using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.Core.Runs;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace AllCardIs.Core
 {
@@ -15,7 +12,7 @@ namespace AllCardIs.Core
     {
         private static readonly object SyncRoot = new();
         private static readonly object GenericCreatedMarker = new();
-        private static readonly ConditionalWeakTable<CardModel, object> GenericCreatedCards = new();
+        private static readonly ConditionalWeakTable<CardModel, object> GenericCreatedCards = [];
 
         private static CardModel? targetTemplate;
         private static string? cachedTargetId;

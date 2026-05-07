@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using JmcModLib.Config;
+﻿using JmcModLib.Config;
 using JmcModLib.Config.UI;
 using JmcModLib.Utils;
 
@@ -84,7 +82,7 @@ namespace AllCardIs.Core
 
             if (value.StartsWith("CARD.", StringComparison.OrdinalIgnoreCase))
             {
-                value = value.Substring("CARD.".Length);
+                value = value["CARD.".Length..];
             }
 
             return "CARD." + value.Trim().ToUpperInvariant();
