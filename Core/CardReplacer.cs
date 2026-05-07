@@ -13,7 +13,6 @@ namespace AllCardIs.Core
 {
     public static class CardReplacer
     {
-        private const string AscendersBane = "CARD.ASCENDERS_BANE";
         private static readonly object SyncRoot = new();
         private static readonly object GenericCreatedMarker = new();
         private static readonly ConditionalWeakTable<CardModel, object> GenericCreatedCards = new();
@@ -33,19 +32,9 @@ namespace AllCardIs.Core
             return !string.Equals(cardId, AllCardIsSettings.TargetCardId, StringComparison.OrdinalIgnoreCase);
         }
 
-        /// <summary>
-        /// Some cards are unsafe to replace by mutating RunState.CreateCard's CardModel argument directly.
-        /// They can still be transformed later by deck cleanup in RunManager.Launch.
-        /// </summary>
         public static bool ShouldBypassCreateCardPrefix(CardModel? card)
         {
-            if (card == null)
-            {
-                return true;
-            }
-
-            string cardId = NormalizeExistingCardId(card.Id.ToString());
-            return string.Equals(cardId, AscendersBane, StringComparison.OrdinalIgnoreCase);
+            return card == null;
         }
 
         public static bool IsCalledFromGenericRunStateCreateCard()
@@ -74,7 +63,6 @@ namespace AllCardIs.Core
         {
             if (!wasGenericCreateCardCall
                 || card == null
-                || ShouldBypassGenericDeckReplacement(card)
                 || !ShouldReplace(card))
             {
                 return;
@@ -171,17 +159,6 @@ namespace AllCardIs.Core
                 cachedTargetId = null;
                 lastMissingTargetId = null;
             }
-        }
-
-        private static bool ShouldBypassGenericDeckReplacement(CardModel? card)
-        {
-            if (card == null)
-            {
-                return true;
-            }
-
-            string cardId = NormalizeExistingCardId(card.Id.ToString());
-            return string.Equals(cardId, AscendersBane, StringComparison.OrdinalIgnoreCase);
         }
 
         private static void CopyUpgradeLevel(CardModel source, CardModel target)

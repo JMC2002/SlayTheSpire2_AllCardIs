@@ -17,8 +17,7 @@ namespace AllCardIs.Patches
         [HarmonyPrefix]
         public static void Prefix(ref CardModel __0, out bool __state)
         {
-            // 进阶之灾 / ASCENDERS_BANE 在游戏内部创建路径比较特殊，
-            // CreateCard<T> 这类指定类型创建也不能在这里提前改入参，
+            // CreateCard<T> 这类指定类型创建不能在这里提前改入参，
             // 否则会触发游戏内部的泛型强转崩溃。
             __state = CardReplacer.IsCalledFromGenericRunStateCreateCard();
             if (__state)
