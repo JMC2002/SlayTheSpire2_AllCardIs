@@ -1,7 +1,18 @@
 {
-  "EXTENSION.JMCMODLIB.CONFIG.AllCardIs.GROUP.基础设置": "基础设置",
+  "EXTENSION.JMCMODLIB.CONFIG.AllCardIs.GROUP.基础设置": "目标",
+  "EXTENSION.JMCMODLIB.CONFIG.AllCardIs.GROUP.源类型": "源类型",
   "EXTENSION.JMCMODLIB.CONFIG.AllCardIs.enabled.NAME": "启用卡牌替换",
   "EXTENSION.JMCMODLIB.CONFIG.AllCardIs.enabled.DESCRIPTION": "关闭后不需要重启游戏；Harmony 补丁仍存在，但会直接读取这个字段并放行所有卡牌。",
   "EXTENSION.JMCMODLIB.CONFIG.AllCardIs.target_card.NAME": "目标卡牌 ID",
-  "EXTENSION.JMCMODLIB.CONFIG.AllCardIs.target_card.DESCRIPTION": "可输入 WHITE_NOISE 或 CARD.WHITE_NOISE；也支持内置中文别名，如：白噪音、死亡收割。修改后立即生效。"
+  "EXTENSION.JMCMODLIB.CONFIG.AllCardIs.target_card.DESCRIPTION": "可输入 WHITE_NOISE 或 CARD.WHITE_NOISE；也支持内置中文别名，如：白噪音、死亡收割。修改后立即生效。",
+  "EXTENSION.JMCMODLIB.CONFIG.AllCardIs.source.attack.NAME": "替换攻击牌",
+  "EXTENSION.JMCMODLIB.CONFIG.AllCardIs.source.attack.DESCRIPTION": "勾选后，攻击牌会被替换为目标卡牌；取消后攻击牌保持原样。",
+  "EXTENSION.JMCMODLIB.CONFIG.AllCardIs.source.power.NAME": "替换能力牌",
+  "EXTENSION.JMCMODLIB.CONFIG.AllCardIs.source.power.DESCRIPTION": "勾选后，能力牌会被替换为目标卡牌；取消后能力牌保持原样。",
+  "EXTENSION.JMCMODLIB.CONFIG.AllCardIs.source.skill.NAME": "替换技能牌",
+  "EXTENSION.JMCMODLIB.CONFIG.AllCardIs.source.skill.DESCRIPTION": "勾选后，技能牌会被替换为目标卡牌；取消后技能牌保持原样。",
+  "EXTENSION.JMCMODLIB.CONFIG.AllCardIs.source.curse.NAME": "替换诅咒牌",
+  "EXTENSION.JMCMODLIB.CONFIG.AllCardIs.source.curse.DESCRIPTION": "勾选后，诅咒牌会被替换为目标卡牌；取消后诅咒牌保持原样。",
+  "EXTENSION.JMCMODLIB.CONFIG.AllCardIs.source.quest.NAME": "替换任务牌",
+  "EXTENSION.JMCMODLIB.CONFIG.AllCardIs.source.quest.DESCRIPTION": "勾选后，任务牌会被替换为目标卡牌；取消后任务牌保持原样。状态牌不会被此 MOD 替换。"
 }

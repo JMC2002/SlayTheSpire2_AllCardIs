@@ -1,6 +1,7 @@
-﻿using JmcModLib.Config;
+using JmcModLib.Config;
 using JmcModLib.Config.UI;
 using JmcModLib.Utils;
+using MegaCrit.Sts2.Core.Entities.Cards;
 
 namespace AllCardIs.Core
 {
@@ -11,6 +12,7 @@ namespace AllCardIs.Core
     public static class AllCardIsSettings
     {
         private const string GeneralGroup = "基础设置";
+        private const string SourceTypeGroup = "源类型";
         private const string DefaultTargetCard = "WHITE_NOISE";
 
         private static readonly IReadOnlyDictionary<string, string> Aliases = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
@@ -57,10 +59,68 @@ namespace AllCardIs.Core
             Order = 20)]
         public static string TargetCard = DefaultTargetCard;
 
+        [UIToggle]
+        [Config(
+            "替换攻击牌",
+            group: SourceTypeGroup,
+            Description = "勾选后，攻击牌会被替换为目标卡牌；取消后攻击牌保持原样。",
+            Key = "source.attack",
+            Order = 10)]
+        public static bool ReplaceAttackCards = true;
+
+        [UIToggle]
+        [Config(
+            "替换能力牌",
+            group: SourceTypeGroup,
+            Description = "勾选后，能力牌会被替换为目标卡牌；取消后能力牌保持原样。",
+            Key = "source.power",
+            Order = 20)]
+        public static bool ReplacePowerCards = true;
+
+        [UIToggle]
+        [Config(
+            "替换技能牌",
+            group: SourceTypeGroup,
+            Description = "勾选后，技能牌会被替换为目标卡牌；取消后技能牌保持原样。",
+            Key = "source.skill",
+            Order = 30)]
+        public static bool ReplaceSkillCards = true;
+
+        [UIToggle]
+        [Config(
+            "替换诅咒牌",
+            group: SourceTypeGroup,
+            Description = "勾选后，诅咒牌会被替换为目标卡牌；取消后诅咒牌保持原样。",
+            Key = "source.curse",
+            Order = 40)]
+        public static bool ReplaceCurseCards = true;
+
+        [UIToggle]
+        [Config(
+            "替换任务牌",
+            group: SourceTypeGroup,
+            Description = "勾选后，任务牌会被替换为目标卡牌；取消后任务牌保持原样。状态牌不会被此 MOD 替换。",
+            Key = "source.quest",
+            Order = 50)]
+        public static bool ReplaceQuestCards = true;
+
         /// <summary>
         /// Normalized target id used by the patch, for example CARD.WHITE_NOISE.
         /// </summary>
         public static string TargetCardId => NormalizeCardId(TargetCard, fallbackToDefault: true);
+
+        public static bool ShouldReplaceSourceType(CardType cardType)
+        {
+            return cardType switch
+            {
+                CardType.Attack => ReplaceAttackCards,
+                CardType.Power => ReplacePowerCards,
+                CardType.Skill => ReplaceSkillCards,
+                CardType.Curse => ReplaceCurseCards,
+                CardType.Quest => ReplaceQuestCards,
+                _ => false,
+            };
+        }
 
         public static string NormalizeCardId(string? raw, bool fallbackToDefault = false)
         {

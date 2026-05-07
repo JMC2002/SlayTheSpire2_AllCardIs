@@ -25,6 +25,11 @@ namespace AllCardIs.Core
                 return false;
             }
 
+            if (!AllCardIsSettings.ShouldReplaceSourceType(card.Type))
+            {
+                return false;
+            }
+
             string cardId = NormalizeExistingCardId(card.Id.ToString());
             return !string.Equals(cardId, AllCardIsSettings.TargetCardId, StringComparison.OrdinalIgnoreCase);
         }

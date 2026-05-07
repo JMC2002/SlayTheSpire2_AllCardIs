@@ -36,14 +36,15 @@ Steam版本直接在创意工坊订阅即可（暂未开放）
 
 ---
 ## 🧠 1. 简介
-将攻击牌和诅咒变为爪击，后续可能考虑做成通用形式；有问题反馈B站JMC丶或者Github，二次分发请注明来源
+将所有牌变为某一张牌
 
 [演示视频（B站）](https://www.bilibili.com/video/BV1BnwXziEsc)
 
 [Github仓库](https://github.com/JMC2002/SlayTheSpire2_AllCardIs)
 ## ⚙️ 2. 功能
-- 将攻击牌和诅咒变为爪击
- 
+- 将所有牌（可选攻击、技能、诅咒、能力、事件牌）变为某一张牌，在设置界面输入牌的ID或者某些卡牌的中文名（如爪击）即可，不知道ID的可以去[Wiki](https://sts2.huijiwiki.com/wiki)查阅
+ ![配置界面](./pic/配置.png)
+
 ## 🔔 3. 提醒
 - **本模组强依赖于模组[JmcModLib](https://github.com/JMC2002/JmcModLib_STS2/releases)**
  
