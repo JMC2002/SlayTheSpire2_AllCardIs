@@ -42,7 +42,7 @@ Steam版本直接在创意工坊订阅即可（暂未开放）
 
 [Github仓库](https://github.com/JMC2002/SlayTheSpire2_AllCardIs)
 ## ⚙️ 2. 功能
-- 将所有牌（可选攻击、技能、诅咒、能力、事件牌）变为某一张牌，在设置界面输入牌的ID或者某些卡牌的中文名（如爪击）即可，不知道ID的可以去[Wiki](https://sts2.huijiwiki.com/wiki)查阅
+- 将所有牌（可选攻击、技能、诅咒、能力、事件牌）变为某一张牌，在设置界面输入牌的 ID、`CARD.xxx`，或当前游戏语言下的卡牌名（如中文界面的“爪击”）即可；如果牌名重名（如“打击”），请改用明确 ID。不知道 ID 的可以去[Wiki](https://sts2.huijiwiki.com/wiki)查阅
  ![配置界面](./pic/配置.png)
 
 ## 🔔 3. 提醒

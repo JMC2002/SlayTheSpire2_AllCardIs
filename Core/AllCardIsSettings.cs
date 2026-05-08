@@ -15,31 +15,6 @@ namespace AllCardIs.Core
         private const string SourceTypeGroup = "源类型";
         private const string DefaultTargetCard = "WHITE_NOISE";
 
-        private static readonly IReadOnlyDictionary<string, string> Aliases = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
-        {
-            { "白噪音", "CARD.WHITE_NOISE" },
-            { "大奖", "CARD.JACKPOT" },
-            { "添柴", "CARD.STOKE" },
-            { "飞溅", "CARD.SPLASH" },
-            { "狱火", "CARD.INFERNO" },
-            { "吹哨", "CARD.WHISTLE" },
-            { "打击", "CARD.STRIKE_DEFECT" },
-            { "铸墙", "CARD.BULWARK" },
-            { "冲刺", "CARD.DASH" },
-            { "吊杀", "CARD.HANG" },
-            { "爪击", "CARD.CLAW" },
-            { "撕咬", "CARD.MAUL" },
-            { "发现", "CARD.DISCOVERY" },
-            { "拳斗", "CARD.FISTICUFFS" },
-            { "暗影之盾", "CARD.SHADOW_SHIELD" },
-            { "闪亮登场", "CARD.DRAMATIC_ENTRANCE" },
-            { "华丽收场", "CARD.GRAND_FINALE" },
-            { "蛇咬", "CARD.SNAKEBITE" },
-            { "新生之喜", "CARD.BUNDLE_OF_JOY" },
-            { "死亡收割", "CARD.REAPER" },
-            { "完美打击", "CARD.PERFECTED_STRIKE" },
-        };
-
         [UIToggle]
         [Config(
             "启用卡牌替换",
@@ -51,10 +26,10 @@ namespace AllCardIs.Core
 
         [UIInput(64)]
         [Config(
-            "目标卡牌 ID",
+            "目标卡牌",
             onChanged: nameof(OnTargetCardChanged),
             group: GeneralGroup,
-            Description = "可输入 WHITE_NOISE 或 CARD.WHITE_NOISE；也支持内置中文别名，如：白噪音、死亡收割。修改后立即生效。",
+            Description = "可输入 WHITE_NOISE、CARD.WHITE_NOISE，或当前游戏语言下的卡牌名；重名卡牌请使用明确 ID。修改后立即生效。",
             Key = "target_card",
             Order = 20)]
         public static string TargetCard = DefaultTargetCard;
@@ -135,17 +110,14 @@ namespace AllCardIs.Core
                 return string.Empty;
             }
 
-            if (Aliases.TryGetValue(value, out string? mapped))
+            if (CardNameResolver.TryNormalizePrefixedCardId(value, out string normalizedCardId)
+                || CardNameResolver.TryResolveExistingShortId(value, out normalizedCardId)
+                || CardNameResolver.TryResolveDisplayName(value, out normalizedCardId))
             {
-                return mapped;
+                return normalizedCardId;
             }
 
-            if (value.StartsWith("CARD.", StringComparison.OrdinalIgnoreCase))
-            {
-                value = value["CARD.".Length..];
-            }
-
-            return "CARD." + value.Trim().ToUpperInvariant();
+            return CardNameResolver.NormalizeCardIdEntry(value);
         }
 
         /// <summary>
@@ -153,6 +125,7 @@ namespace AllCardIs.Core
         /// </summary>
         private static void OnTargetCardChanged(string value)
         {
+            CardNameResolver.InvalidateCache();
             CardReplacer.InvalidateTargetCache();
             ModLogger.Info($"AllCardIs 目标卡牌已改为：{NormalizeCardId(value, fallbackToDefault: true)}");
         }

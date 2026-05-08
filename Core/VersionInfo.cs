@@ -3,7 +3,7 @@ namespace AllCardIs.Core;
 public static class VersionInfo
 {
     public const string Name = "AllCardIs";
-    public const string Version = "1.3.10";
+    public const string Version = "1.3.11";
 
     public static string Tag => $"[{Name} v{Version}]";
 }
