@@ -1,5 +1,8 @@
 using JmcModLib.Utils;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Ascension;
+using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.Core.Runs;
@@ -13,6 +16,7 @@ namespace AllCardIs.Core
         private static readonly object SyncRoot = new();
         private static readonly object GenericCreatedMarker = new();
         private static readonly ConditionalWeakTable<CardModel, object> GenericCreatedCards = [];
+        private static readonly ConditionalWeakTable<CardModel, CardModel> ReplacementSources = [];
 
         private static CardModel? targetTemplate;
         private static string? cachedTargetId;
@@ -63,9 +67,7 @@ namespace AllCardIs.Core
 
         public static void MarkCreatedFromGeneric(bool wasGenericCreateCardCall, CardModel? card)
         {
-            if (!wasGenericCreateCardCall
-                || card == null
-                || !ShouldReplace(card))
+            if (!wasGenericCreateCardCall || card == null)
             {
                 return;
             }
@@ -74,25 +76,116 @@ namespace AllCardIs.Core
             GenericCreatedCards.Add(card, GenericCreatedMarker);
         }
 
-        public static bool TryReplaceGenericCreatedCardForDeckAdd(IRunState runState, ref CardModel card, string source)
+        public static void MarkReplacementSource(CardModel? replacement, CardModel? sourceTemplate)
         {
-            if (!AllCardIsSettings.Enabled || !GenericCreatedCards.TryGetValue(card, out _))
+            if (replacement == null || sourceTemplate == null)
+            {
+                return;
+            }
+
+            ReplacementSources.Remove(replacement);
+            ReplacementSources.Add(replacement, sourceTemplate.CanonicalInstance);
+        }
+
+        public static void TransferCardMetadata(CardModel source, CardModel? target)
+        {
+            if (target == null)
+            {
+                return;
+            }
+
+            if (GenericCreatedCards.TryGetValue(source, out _))
+            {
+                GenericCreatedCards.Remove(target);
+                GenericCreatedCards.Add(target, GenericCreatedMarker);
+            }
+
+            if (ReplacementSources.TryGetValue(source, out CardModel? sourceTemplate))
+            {
+                MarkReplacementSource(target, sourceTemplate);
+            }
+        }
+
+        public static void AdjustRewardUpgradeOdds(IRunState runState, CardModel card, ref decimal originalOdds)
+        {
+            if (!ReplacementSources.TryGetValue(card, out CardModel? sourceTemplate))
+            {
+                return;
+            }
+
+            decimal sourceBonus = GetNaturalUpgradeActBonus(runState, sourceTemplate);
+            decimal targetBonus = GetNaturalUpgradeActBonus(runState, card);
+            decimal adjustment = sourceBonus - targetBonus;
+            if (adjustment == 0m)
+            {
+                return;
+            }
+
+            originalOdds += adjustment;
+            ModLogger.Debug($"AllCardIs 自然升级概率按原卡修正：{sourceTemplate.Id} -> {card.Id}，调整={adjustment:P0}，修正后={originalOdds:P0}");
+        }
+
+        public static bool TryReplaceNewCardBeingAddedToDeck(ref CardModel card, string source)
+        {
+            if (card.Owner == null || card.Pile != null || card.HasBeenRemovedFromState)
+            {
+                return false;
+            }
+
+            return TryReplaceCardBeingAddedToDeck(card.Owner.RunState, ref card, source);
+        }
+
+        public static bool TryReplaceNewCardsBeingAddedToDeck(ref IEnumerable<CardModel> cards, string source)
+        {
+            if (!AllCardIsSettings.Enabled)
+            {
+                return false;
+            }
+
+            List<CardModel> cardList = cards.ToList();
+            bool replacedAny = false;
+            for (int i = 0; i < cardList.Count; i++)
+            {
+                CardModel card = cardList[i];
+                if (TryReplaceNewCardBeingAddedToDeck(ref card, $"{source}[{i}]"))
+                {
+                    cardList[i] = card;
+                    replacedAny = true;
+                }
+            }
+
+            cards = cardList;
+            return replacedAny;
+        }
+
+        public static bool TryReplaceCardBeingAddedToDeck(IRunState runState, ref CardModel card, string source)
+        {
+            if (!AllCardIsSettings.Enabled || card.HasBeenRemovedFromState)
             {
                 return false;
             }
 
             CardModel original = card;
+            bool wasGenericCreated = GenericCreatedCards.TryGetValue(original, out _);
             GenericCreatedCards.Remove(original);
 
             if (original.Owner == null)
             {
-                ModLogger.Warn($"AllCardIs 检测到泛型创建卡牌 {original.Id} 准备入牌组，但 Owner 为空，跳过替换。来源：{source}");
+                if (wasGenericCreated)
+                {
+                    ModLogger.Warn($"AllCardIs 检测到泛型创建卡牌 {original.Id} 准备入牌组，但 Owner 为空，跳过替换。来源：{source}");
+                }
+
                 return false;
             }
 
             if (!ShouldReplace(original))
             {
-                ModLogger.Debug($"AllCardIs 泛型创建卡牌已是目标牌，跳过入牌组替换：{original.Id}。来源：{source}");
+                if (wasGenericCreated)
+                {
+                    ModLogger.Debug($"AllCardIs 泛型创建卡牌无需入牌组替换：{original.Id}。来源：{source}");
+                }
+
                 return false;
             }
 
@@ -106,8 +199,8 @@ namespace AllCardIs.Core
             try
             {
                 CardModel replacement = runState.CreateCard(target, original.Owner);
-                replacement.FloorAddedToDeck = original.FloorAddedToDeck;
-                CopyUpgradeLevel(original, replacement);
+                CopyReplacementState(original, replacement);
+                MarkReplacementSource(replacement, original);
 
                 // 原卡只用于事件内部强类型逻辑；真正入牌组前换成目标卡。
                 original.RemoveFromState();
@@ -120,6 +213,12 @@ namespace AllCardIs.Core
                 ModLogger.Error($"AllCardIs 入牌组替换异常。原卡：{original.Id}，目标：{AllCardIsSettings.TargetCardId}，来源：{source}", exception);
                 return false;
             }
+        }
+
+        public static void CopyReplacementState(CardModel source, CardModel target)
+        {
+            target.FloorAddedToDeck = source.FloorAddedToDeck;
+            CopyUpgradeLevel(source, target);
         }
 
         public static CardModel? GetTarget()
@@ -163,13 +262,24 @@ namespace AllCardIs.Core
             }
         }
 
-        private static void CopyUpgradeLevel(CardModel source, CardModel target)
+        public static void CopyUpgradeLevel(CardModel source, CardModel target)
         {
             int upgradeCount = Math.Min(source.CurrentUpgradeLevel, target.MaxUpgradeLevel);
             for (int i = 0; i < upgradeCount && target.IsUpgradable; i++)
             {
                 CardCmd.Upgrade(target, CardPreviewStyle.None);
             }
+        }
+
+        private static decimal GetNaturalUpgradeActBonus(IRunState runState, CardModel card)
+        {
+            if (card.Rarity == CardRarity.Rare)
+            {
+                return 0m;
+            }
+
+            decimal upgradedCardOddScaling = AscensionHelper.GetValueIfAscension(AscensionLevel.Scarcity, 0.125m, 0.25m);
+            return runState.CurrentActIndex * upgradedCardOddScaling;
         }
 
         private static string NormalizeExistingCardId(string? cardId)
