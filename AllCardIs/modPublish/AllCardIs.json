@@ -2,10 +2,16 @@
   "id": "AllCardIs",
   "name": "将所有卡牌变为/AllCardIs",
   "author": "JMC",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "将所有指定类型的卡牌替换为设置中指定的目标卡牌；支持输入卡牌 ID 或当前游戏语言下的卡牌名。",
   "has_pck": true,
   "has_dll": true,
-  "dependencies": ["JmcModLib"],
-  "affects_gameplay": false
+  "dependencies": [
+    {
+      "id": "JmcModLib",
+      "min_version": "1.4.0"
+    }
+  ],
+  "affects_gameplay": false,
+  "min_game_version": "0.107.1"
 }

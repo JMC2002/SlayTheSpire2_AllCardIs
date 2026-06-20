@@ -48,12 +48,13 @@ Steam版本直接在创意工坊订阅即可（暂未开放）
 ## 🧠 1. 简介
 将所有牌变为某一张牌
 
-[演示视频（B站）](https://www.bilibili.com/video/BV1BnwXziEsc)
+[演示视频（B站）](https://www.bilibili.com/video/BV1oMQcB4EJS)
 
 [Github仓库](https://github.com/JMC2002/SlayTheSpire2_AllCardIs)
 ## ⚙️ 2. 功能
 - 将所有牌（可选攻击、技能、诅咒、能力、事件牌）变为某一张牌，在设置界面输入牌的 ID、`CARD.xxx`，或当前游戏语言下的卡牌名（如中文界面的“爪击”）即可；如果牌名重名（如“打击”），请改用明确 ID。不知道 ID 的可以去[Wiki](https://sts2.huijiwiki.com/wiki)查阅
- ![配置界面](./pic/配置.png)
+ ![配置界面](./pic/设置.png)
+- 当你想关闭这个MOD，直接在设置内关闭功能即可，不需要重启游戏/取消订阅
 
 ## 🔔 3. 提醒
 - **本模组强依赖于模组[JmcModLib](https://github.com/JMC2002/JmcModLib_STS2/releases)**
@@ -62,10 +63,6 @@ Steam版本直接在创意工坊订阅即可（暂未开放）
 - 由于游戏处于EA阶段，可能会随着游戏版本更新而失效
 
 ## 🧭 5. TODO
-- 将所有卡牌（初始以及后续获得的卡，不包括局内检索）变为某卡，具体看更新公告，后续可能考虑做成通用形式
+
 
 **如果你喜欢这个 Mod 的话，希望可以点一个star~**
-
-如果你真的很有钱，可以考虑给我赞助，给我赞助你得不到任何东西，但是可以吓我一跳。
-
-![图片描述](pic/wechat_qrcode.png)
