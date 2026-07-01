@@ -2,7 +2,7 @@
 [h2] 1. Overview [/h2]
 Want to try turning every card into Claw? Want to turn every card into Snake Bite? Use this MOD to experience it!
 
-[url=https://github.com/JMC2002/SlayTheSpire2_AllCardIs] GitHub Repository [/url]
+[url=https://github.com/JMC-Mods/SlayTheSpire2_AllCardIs] GitHub Repository [/url]
 [url=https://www.bilibili.com/video/BV1oMQcB4EJS] Demo Video (Bilibili) (All cards become Claw) [/url]
 
 [h2] 2. Features [/h2]
