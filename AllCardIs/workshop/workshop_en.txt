@@ -1,3 +1,6 @@
+[h1] Special Notice [/h1]
+[b] If your saves disappear after installing mods, subscribe to [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3747533700] BetterSaveSlots [/url], then click the Import button on the save slot to fix it. Please disable any save-path merging mods before using it. [/b]
+
 [h1] All Cards Become the Same Card (AllCardIs) [/h1]
 [h2] 1. Overview [/h2]
 Want to try turning every card into Claw? Want to turn every card into Snake Bite? Use this MOD to experience it!

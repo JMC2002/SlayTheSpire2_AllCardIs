@@ -1,3 +1,6 @@
+[h1] 特别提醒 [/h1]
+[b] 如果你打MOD后发现存档消失，订阅 [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3747533700] BetterSaveSlots [/url] 后在存档槽点击导入按钮解决，使用前请禁用存档路径合并MOD [/b]
+
 [h1] 所有卡牌变为同一张（AllCardIs） [/h1]
 [h2] 1. 简介 [/h2]
 想试一试所有的卡牌都变成爪击？想把所有的牌变为蛇咬？使用这个 MOD 来体验！
