@@ -1,5 +1,6 @@
 using AllCardIs.Core;
 using HarmonyLib;
+using JmcModLib.Reflection;
 using JmcModLib.Utils;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -7,6 +8,7 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Hooks;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Runs;
+using System.Reflection;
 
 namespace AllCardIs.Patches
 {
@@ -136,9 +138,26 @@ namespace AllCardIs.Patches
         }
     }
 
-    [HarmonyPatch(typeof(CardPileCmd), nameof(CardPileCmd.Add), new[] { typeof(IEnumerable<CardModel>), typeof(CardPile), typeof(CardPilePosition), typeof(AbstractModel), typeof(bool) })]
+    [HarmonyPatch]
     public static class CardPileCmd_AddManyToCardPile_Patch
     {
+        private static readonly Type[] AddManyToCardPileParameterTypes =
+        [
+            typeof(IEnumerable<CardModel>),
+            typeof(CardPile),
+            typeof(CardPilePosition),
+            typeof(AbstractModel),
+            typeof(bool)
+        ];
+
+        public static MethodBase TargetMethod()
+        {
+            return MethodAccessor.Get(
+                typeof(CardPileCmd),
+                nameof(CardPileCmd.Add),
+                AddManyToCardPileParameterTypes).MemberInfo;
+        }
+
         [HarmonyPrefix]
         [HarmonyPriority(Priority.First)]
         public static void Prefix(ref IEnumerable<CardModel> __0, CardPile __1)

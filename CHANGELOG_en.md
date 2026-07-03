@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.5.3] - 2026-7-3
+### Fixed
+- Added compatibility for the `CardPileCmd.Add(IEnumerable<CardModel>, CardPile, ...)` API change introduced by STS2 0.108, preventing the batch deck-addition patch from failing to find its target method at startup while keeping compatibility with 0.107.1.
+
 ## [1.5.1] - 2026-7-1
 ### Added
 - Test automated publishing workflow.
